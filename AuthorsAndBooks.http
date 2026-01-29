@@ -1,0 +1,74 @@
+@host = https://localhost:5001
+
+### Create Author
+# @name createAuthor
+POST {{host}}/authors
+Content-Type: application/json
+
+{
+  "name": "Douglas Adams"
+}
+
+### Get All Authors
+GET {{host}}/authors
+Accept: application/json
+
+### Get All Authors (include books)
+GET {{host}}/authors?includeBooks=true
+Accept: application/json
+
+### Get Author by ID
+@authorId = {{createAuthor.response.body.$.id}}
+GET {{host}}/authors/{{authorId}}
+Accept: application/json
+
+### Get Author with Books
+GET {{host}}/authors/{{authorId}}?includeBooks=true
+Accept: application/json
+
+### Create Book
+# @name createBook
+POST {{host}}/authors/{{authorId}}/books
+Content-Type: application/json
+
+{
+  "title": "Hitchhiker's Guide to the Galaxy"
+}
+
+### Get Book
+@bookId = {{createBook.response.body.$.id}}
+GET {{host}}/books/{{bookId}}
+Accept: application/json
+
+### Get Book with Author
+GET {{host}}/books/{{bookId}}?includeAuthor=true
+Accept: application/json
+
+### Get All Books
+GET {{host}}/books
+Accept: application/json
+
+### Get All Books with Author
+GET {{host}}/books?includeAuthor=true
+Accept: application/json
+
+### DUPLICATES / ERROR SCENARIOS BELOW
+
+### Duplicate Author → 409
+POST {{host}}/authors
+Content-Type: application/json
+
+{
+  "name": "Douglas Adams"
+}
+
+### Invalid Author → 400
+POST {{host}}/authors
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+### Non-existent Author → 404
+GET {{host}}/authors/99999999-9999-9999-9999-999999999999
