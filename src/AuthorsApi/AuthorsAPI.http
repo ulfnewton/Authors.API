@@ -1,0 +1,98 @@
+@AuthorsAPI_HostAddress = https://localhost:5001
+
+### Create Author - Douglas Adams
+# @name createAuthor
+POST {{AuthorsAPI_HostAddress}}/authors
+Content-Type: application/json
+
+{
+  "name": "Douglas Adams"
+}
+
+### Get All Authors
+GET {{AuthorsAPI_HostAddress}}/authors
+Accept: application/json
+
+### Get Specific Author by ID (automatically uses ID from createAuthor response)
+@authorId = {{createAuthor.response.body.$.id}}
+GET {{AuthorsAPI_HostAddress}}/authors/{{authorId}}
+Accept: application/json
+
+### Create Book - Hitchhiker's Guide to the Galaxy
+POST {{AuthorsAPI_HostAddress}}/authors/{{authorId}}/books
+Content-Type: application/json
+
+{
+  "title": "Hitchhiker's Guide to the Galaxy",
+  "authorId": "{{authorId}}"
+}
+
+### Create Another Book - The Restaurant at the End of the Universe
+POST {{AuthorsAPI_HostAddress}}/authors/{{authorId}}/books
+Content-Type: application/json
+
+{
+  "title": "The Restaurant at the End of the Universe",
+  "authorId": "{{authorId}}"
+}
+
+### Test: Duplicate Author (should return 409 Conflict)
+POST {{AuthorsAPI_HostAddress}}/authors
+Content-Type: application/json
+
+{
+  "name": "Douglas Adams"
+}
+
+### Test: Invalid Author Name - Empty (should return 400 Bad Request)
+POST {{AuthorsAPI_HostAddress}}/authors
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+### Test: Invalid Author Name - Whitespace (should return 400 Bad Request)
+POST {{AuthorsAPI_HostAddress}}/authors
+Content-Type: application/json
+
+{
+  "name": "   "
+}
+
+### Test: Duplicate Book (should return 409 Conflict)
+POST {{AuthorsAPI_HostAddress}}/authors/{{authorId}}/books
+Content-Type: application/json
+
+{
+  "title": "Hitchhiker's Guide to the Galaxy",
+  "authorId": "{{authorId}}"
+}
+
+### Test: Invalid Book Title - Empty (should return 400 Bad Request)
+POST {{AuthorsAPI_HostAddress}}/authors/{{authorId}}/books
+Content-Type: application/json
+
+{
+  "title": "",
+  "authorId": "{{authorId}}"
+}
+
+### Test: Book with Non-Existent Author (should return 404 Not Found)
+POST {{AuthorsAPI_HostAddress}}/authors/99999999-9999-9999-9999-999999999999/books
+Content-Type: application/json
+
+{
+  "title": "Some Book",
+  "authorId": "99999999-9999-9999-9999-999999999999"
+}
+
+### Test: Get Non-Existent Author (should return 404 Not Found)
+GET {{AuthorsAPI_HostAddress}}/authors/99999999-9999-9999-9999-999999999999
+Accept: application/json
+
+### Test: Get Author with Empty GUID (should return 400 Bad Request)
+GET {{AuthorsAPI_HostAddress}}/authors/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+###
