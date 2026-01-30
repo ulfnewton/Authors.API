@@ -87,7 +87,7 @@ public static class AuthorEndpoints
         return TypedResults.Ok(author);
     }
 
-    public static async Task<Results<Created<Book>, ProblemHttpResult>> CreateBook(BookDTO dto, AuthorDbContext context)
+    public static async Task<Results<Created<Book>, ProblemHttpResult>> CreateBook([FromRoute] Guid authorId, BookDTO dto, AuthorDbContext context)
     {
         if (string.IsNullOrWhiteSpace(dto.Title))
         {
@@ -101,7 +101,7 @@ public static class AuthorEndpoints
             return TypedResults.Problem(pd);
         }
 
-        var author = await context.Authors.FindAsync(new object[] { dto.AuthorId });
+        var author = await context.Authors.FindAsync(new object[] { authorId });
 
         if (author is null)
         {
@@ -109,14 +109,14 @@ public static class AuthorEndpoints
             {
                 Title = "Author Not Found",
                 Status = StatusCodes.Status404NotFound,
-                Detail = $"Author with ID '{dto.AuthorId}' is not found"
+                Detail = $"Author with ID '{authorId}' is not found"
             };
 
             return TypedResults.Problem(pd);
         }
 
         var isDuplicate = await context.Books.AnyAsync(
-            book => book.AuthorId == dto.AuthorId &&
+            book => book.AuthorId == authorId &&
                     book.Title.Equals(dto.Title, StringComparison.InvariantCultureIgnoreCase));
 
         if (isDuplicate)
@@ -134,7 +134,7 @@ public static class AuthorEndpoints
         var book = new Book
         {
             Title = dto.Title,
-            AuthorId = dto.AuthorId,
+            AuthorId = authorId,
             Author = author
         };
 

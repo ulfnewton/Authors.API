@@ -30,6 +30,6 @@ app.UseHttpsRedirection();
 app.MapPost("/authors", AuthorEndpoints.CreateAuthor);
 app.MapGet("/authors", AuthorEndpoints.GetAuthors);
 app.MapGet("/authors/{id:guid}", AuthorEndpoints.GetAuthor);
-app.MapPost("/authors/{id:guid}/books", AuthorEndpoints.CreateBook);
+app.MapPost("/authors/{authorId:guid}/books", AuthorEndpoints.CreateBook);
 
 app.Run();

@@ -20,7 +20,7 @@ namespace AuthorsAPI
         public Author Author { get; set; }
     }
     public record AuthorDTO(string Name);
-    public record BookDTO(string Title, Guid AuthorId);
+    public record BookDTO(string Title/*, Guid AuthorId*/);
     public class AuthorDbContext : DbContext
     {
         public AuthorDbContext(DbContextOptions builder) : base(builder) { }
