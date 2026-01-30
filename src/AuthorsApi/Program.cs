@@ -30,6 +30,13 @@ app.UseHttpsRedirection();
 app.MapPost("/authors", AuthorEndpoints.CreateAuthor);
 app.MapGet("/authors", AuthorEndpoints.GetAuthors);
 app.MapGet("/authors/{id:guid}", AuthorEndpoints.GetAuthor);
-app.MapPost("/authors/{authorId:guid}/books", AuthorEndpoints.CreateBook);
+app.MapPost("/authors/{authorId:guid}/books", AuthorEndpoints.CreateBook)
+    .Produces(StatusCodes.Status201Created)
+    .ProducesProblem(StatusCodes.Status400BadRequest)
+    .ProducesProblem(StatusCodes.Status404NotFound)
+    .ProducesProblem(StatusCodes.Status409Conflict)
+    .WithName(nameof(AuthorEndpoints.CreateBook))
+    .WithDescription("Creates a book from the given author.")
+    ;
 
 app.Run();

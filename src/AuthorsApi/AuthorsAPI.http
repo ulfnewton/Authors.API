@@ -6,7 +6,7 @@ POST {{AuthorsAPI_HostAddress}}/authors
 Content-Type: application/json
 
 {
-  "name": "Douglas Adams"
+  "name": "Douglas Adams, Jr."
 }
 
 ### Get All Authors
@@ -14,8 +14,9 @@ GET {{AuthorsAPI_HostAddress}}/authors
 Accept: application/json
 
 ### Get Specific Author by ID (automatically uses ID from createAuthor response)
+# @name createBook
 @authorId = {{createAuthor.response.body.$.id}}
-GET {{AuthorsAPI_HostAddress}}/authors/{{authorId}}
+GET {{AuthorsAPI_HostAddress}}/authors/{{authorId}}?includeBooks=false
 Accept: application/json
 
 ### Create Book - Hitchhiker's Guide to the Galaxy

@@ -53,7 +53,10 @@ public static class AuthorEndpoints
         return TypedResults.Ok(authors);
     }
 
-    public static async Task<Results<Ok<Author>, ProblemHttpResult>> GetAuthor(Guid id, AuthorDbContext context)
+    public static async Task<Results<Ok<Author>, ProblemHttpResult>> GetAuthor(
+        [FromRoute]Guid id,
+        AuthorDbContext context,
+        [FromQuery] bool includeBooks = false)
     {
         if (id == Guid.Empty)
         {
@@ -67,12 +70,10 @@ public static class AuthorEndpoints
             return TypedResults.Problem(pd);
         }
 
-        var author = await context.Authors
-                            .Where(a => a.Id == id)
-                            .Include(a => a.Books)     // Eager loading
-                            .FirstOrDefaultAsync();
+        IQueryable<Author> author = context.Authors
+                            .Where(a => a.Id == id);
 
-        if (author is null)
+        if (!await author.AnyAsync()) // alternativt: author.Count() == 0
         {
             var pd = new ProblemDetails
             {
@@ -84,7 +85,12 @@ public static class AuthorEndpoints
             return TypedResults.Problem(pd);
         }
 
-        return TypedResults.Ok(author);
+        if (includeBooks)
+        {
+            author = author.Include(a => a.Books);     // Eager loading
+        }
+
+        return TypedResults.Ok(await author.FirstOrDefaultAsync());
     }
 
     public static async Task<Results<Created<Book>, ProblemHttpResult>> CreateBook([FromRoute] Guid authorId, BookDTO dto, AuthorDbContext context)
